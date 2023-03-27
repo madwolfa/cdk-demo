@@ -38,9 +38,9 @@ export async function main(event: SQSEvent) {
       await s3_client.send(command)
     } catch (error) {
       if (error instanceof S3ServiceException) {
-        console.error('S3 exception', error.message)
+        console.error('S3 error', error.message)
       } else {
-        console.error('Unknown exception', error)
+        console.error('Error', error)
       } 
     }
   }
@@ -60,9 +60,9 @@ export async function main(event: SQSEvent) {
     console.log('[DEBUG]: EC2 response:', JSON.stringify(resp))
   } catch (error) {
     if (error instanceof EC2ServiceException) {
-      console.error('Unknown exception', error.message)
+      console.error('EC2 error', error.message)
     } else {
-      console.error('EC2 exception', error)
+      console.error('Error', error)
     } 
   }
 
