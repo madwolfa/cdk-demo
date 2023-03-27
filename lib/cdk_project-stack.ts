@@ -217,16 +217,21 @@ export class CdkProjectStack extends cdk.Stack {
           actions: ['execute-api:Invoke'],
           resources: [`arn:aws:execute-api:${this.region}:${this.account}:*`],
         }),
+      ]
+    })
+
+    // Deny ALL IPs except allowlisted in the properties file
+    if (config.allowlist && config.allowlist.length !== 0) {
+      apiGwAccessPolicy.addStatements(
         new iam.PolicyStatement({
           effect: iam.Effect.DENY,
           principals: [new iam.StarPrincipal()],
           actions: ['execute-api:Invoke'],
           resources: [`arn:aws:execute-api:${this.region}:${this.account}:*`],
-          // Deny ALL IPs except allowlisted in the properties file
           conditions: {'NotIpAddress': {'aws:SourceIp': config.allowlist}},
         }),
-      ]
-    })
+      )
+    }
 
     // Enable APIGW execution and access logging
     const logGroup = new logs.LogGroup(this, 'LogGroup', {
