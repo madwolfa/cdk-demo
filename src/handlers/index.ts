@@ -8,12 +8,12 @@ const region = process.env.AWS_REGION
 const bucket = process.env.BUCKET_NAME
 const instance = process.env.INSTANCE_ID ?? ''
 
-// Create SDK clients outside Lambda handler for runtime caching
+// Initiate clients outside Lambda handler for runtime caching
 const s3_client = new S3Client({region})
 const ec2_client = new EC2Client({region})
 
 export async function main(event: SQSEvent) {
-  // Extract messages from SQS events
+  // Extract messages from SQS event
   const messages = event.Records.map(record => {
     const body = JSON.parse(record.body) as { Subject: string; Message: string}
     return {id: record.messageId, subject: body.Subject, message: body.Message}
@@ -23,7 +23,7 @@ export async function main(event: SQSEvent) {
   for (const message of messages) {
     console.log('DEBUG:', message)
 
-    // Create AWS S3 SDK 'PutObject' command input
+    // Initiate S3 'PutObject' command
     const input: PutObjectCommandInput = {
       Bucket: bucket,
       Key: `${message.id}.json`,
@@ -31,10 +31,10 @@ export async function main(event: SQSEvent) {
     }
     const command = new PutObjectCommand(input)
 
-    // Write SQS messages into S3 bucket
+    // Write SQS message into S3 bucket
     try {
       console.log('Writing file: ' + message.id + ' to S3 bucket: ' + bucket)
-      // Send API command
+      // Call API 'send' operation with command input object
       await s3_client.send(command)
     } catch (error) {
       if (error instanceof S3ServiceException) {
@@ -45,7 +45,7 @@ export async function main(event: SQSEvent) {
     }
   }
 
-  // Create AWS EC2 SDK 'StartInstances' command input
+  // Initiate EC2 'StartInstances' command
   const input: StartInstancesCommandInput = {
     InstanceIds: [instance],
     DryRun: false,
@@ -55,7 +55,7 @@ export async function main(event: SQSEvent) {
   // Start EC2 instance
   try {
     console.log('Starting instance:', instance)
-    // Send API command
+    // Call API 'send' operation with command input object
     const resp = await ec2_client.send(command)
     console.log('[DEBUG]: EC2 response:', JSON.stringify(resp))
   } catch (error) {
