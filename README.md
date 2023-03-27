@@ -4,10 +4,10 @@ This is a demo project for CDK development with TypeScript (basic serverless app
 
 It will deploy the following resources (encrypted with CMK where applicable):
 
-* VPC with private subnets (no internet access)
+* VPC with isolated private subnets (no ingress/egress internet access)
 * VPC endpoints (gateway/interface)
-* Public API Gateway (restricted access policy - allowlist)
-* SQS integration for API Gateway
+* API Gateway with public endpoint (use allowlist to restrict access)
+* SQS backend integration for API Gateway
 * Execution and access logging for API Gateway
 * Lambda function (VPC)
 * KMS key (CMK)
@@ -18,16 +18,27 @@ It will deploy the following resources (encrypted with CMK where applicable):
 
 ## Prerequisites
 
-* Node environment (16.x and higher)
+* Node environment (NodeJS >=16.x, NPM)
 * AWS account with unrestricted access
 
 ## Usage
 
 1. Login/assume role in the target AWS account
-2. Add source IP(s) to `allowlist` property inside `properties.json` file
-3. Execute `npm i` to install Node dependencies
-4. Execute `npm run deploy` to deploy CDK stack (~5 minutes)
-5. Use the REST API endpoint URL to POST the following request:
+2. To restrict API access, add source IP CIDR(s) to `allowlist` property inside `properties.json` file:
+
+    ```json
+    {
+        "allowlist": [
+            "10.0.0.1/32",
+            "10.0.0.2/32"
+        ]
+    }
+    ```
+
+3. Execute `npm install` to install Node dependencies
+4. Execute `npm run bootstrap` to bootstrap the target account
+5. Execute `npm run deploy` to deploy CDK stack (~5 minutes)
+6. Use the REST API endpoint URL to POST the following request:
 
     ```bash
     curl --location 'https://<API_ID>.execute-api.us-east-1.amazonaws.com/prod' \
@@ -35,11 +46,11 @@ It will deploy the following resources (encrypted with CMK where applicable):
     --data '{"Subject": "Heck yeah", "Message": "STARTING EC2"}'
     ```
 
-6. Observe API Gateway execution and access logs
-7. Observe Lambda function execution log
-8. Observe SQS messages saved into S3 bucket as `<message_id>.json` files
-9. Observe shutdown EC2 instance start-up
-10. Execute `npm run destroy` to destroy CDK stack
+7. Observe API Gateway execution and access logs
+8. Observe Lambda function execution log
+9. Observe individual SQS messages saved into S3 bucket as `<message_id>.json` files
+10. Observe shutdown EC2 instance start-up
+11. Execute `npm run destroy` to destroy CDK stack
 
 ## Useful commands
 
