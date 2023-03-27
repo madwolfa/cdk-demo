@@ -66,8 +66,6 @@ export async function main(event: SQSEvent) {
     } 
   }
 
-  console.log('messages 👉', JSON.stringify(messages, null, 2))
-
   // Return successful response to API GW
   return {
     body: JSON.stringify({messages}),
