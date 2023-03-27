@@ -136,7 +136,7 @@ export class CdkProjectStack extends cdk.Stack {
     */    
 
     // Create EC2 instance(s)
-    const instances: string[] = []
+    const instanceIds: string[] = []
     for (let i = 0; i < config.instances; i++) {
       const instance = new ec2.Instance(this, `MyInstance${i+1}`, {
         vpc: myVpc,
@@ -144,7 +144,7 @@ export class CdkProjectStack extends cdk.Stack {
         machineImage: ec2.MachineImage.fromSsmParameter('/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-default-arm64'),
         // role: ec2SsmRole,
       })
-      instances.push(instance.instanceId)
+      instanceIds.push(instance.instanceId)
     }
 
     // Create CMK
@@ -179,7 +179,7 @@ export class CdkProjectStack extends cdk.Stack {
       // Pass bucket name and instance ids as environment variables
       environment: {
         BUCKET_NAME: myBucket.bucketName,
-        INSTANCE_IDS: instances.length !== 0 ? instances.join(',') : '',
+        INSTANCE_IDS: instanceIds.length !== 0 ? instanceIds.join(',') : '',
       }
     })
     // Add SQS queue as Lambda event source
