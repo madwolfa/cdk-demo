@@ -23,8 +23,7 @@ It will deploy the following resources (encrypted with CMK where applicable):
 
 ## Usage
 
-1. Login/assume role in the target AWS account
-2. To restrict API access, add source IP CIDR(s) to `allowlist` property inside `properties.json` file:
+1. To restrict API access, add source IP CIDR(s) to `allowlist` property inside `properties.json` file:
 
     ```json
     {
@@ -35,7 +34,7 @@ It will deploy the following resources (encrypted with CMK where applicable):
     }
     ```
 
-3. Set number of EC2 instances to create via `instances` property inside `properties.json` file:
+2. Set number of EC2 instances to create via `instances` property inside `properties.json` file:
 
     ```json
     {
@@ -43,7 +42,8 @@ It will deploy the following resources (encrypted with CMK where applicable):
     }
     ```
 
-4. Execute `npm install` to install Node dependencies
+3. Execute `npm install` to install Node dependencies
+4. Login/assume role in the target AWS account
 5. Execute `npm run bootstrap` to bootstrap the target account
 6. Execute `npm run deploy` to deploy CDK stack (~5 minutes)
 7. Use the REST API endpoint URL to POST the following request:
