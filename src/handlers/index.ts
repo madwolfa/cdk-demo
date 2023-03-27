@@ -23,18 +23,19 @@ export async function main(event: SQSEvent) {
   for (const message of messages) {
     console.log('DEBUG:', message)
 
-    // Initiate S3 'PutObject' command
+    // Define S3 'PutObject' command input parameters
     const input: PutObjectCommandInput = {
       Bucket: bucket,
       Key: `${message.id}.json`,
       Body: Buffer.from(JSON.stringify(message)),
     }
+    // Initiate S3 'PutObject' command with input parameters
     const command = new PutObjectCommand(input)
 
     // Write SQS message into S3 bucket
     try {
       console.log('Writing file: ' + message.id + ' to S3 bucket: ' + bucket)
-      // Call API 'send' operation with command input object
+      // Call API 'send' operation on S3 client with command object as input
       await s3_client.send(command)
     } catch (error) {
       if (error instanceof S3ServiceException) {
@@ -45,17 +46,18 @@ export async function main(event: SQSEvent) {
     }
   }
 
-  // Initiate EC2 'StartInstances' command
+  // Define EC2 'StartInstances' command input parameters
   const input: StartInstancesCommandInput = {
     InstanceIds: [instance],
     DryRun: false,
   }
+  // Initiate EC2 'StartInstances' command with input parameters
   const command = new StartInstancesCommand(input)
 
   // Start EC2 instance
   try {
     console.log('Starting instance:', instance)
-    // Call API 'send' operation with command input object
+    // Call API 'send' operation on EC2 client with command object as input
     const resp = await ec2_client.send(command)
     console.log('[DEBUG]: EC2 response:', JSON.stringify(resp))
   } catch (error) {
