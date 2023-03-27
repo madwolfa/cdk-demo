@@ -33,7 +33,7 @@ export async function main(event: SQSEvent) {
     const command = new PutObjectCommand(input)
     // Write SQS message into S3 bucket
     try {
-      console.log('Writing file: ' + `'${command.input.Key}'` + ' to S3 bucket: ' + `'${command.input.Bucket}'`)
+      console.log('Writing file: ' + command.input.Key + ' to S3 bucket: ' + command.input.Bucket)
       // Call API 'send' operation on S3 client with command object as input
       const resp = await s3_client.send(command)
       console.log('[DEBUG]: S3 response:', JSON.stringify(resp))
@@ -56,7 +56,7 @@ export async function main(event: SQSEvent) {
 
   // Start EC2 instance
   try {
-    console.log('Starting instance:', `'${instance}'`)
+    console.log('Starting instance(s):', command.input.InstanceIds?.toString())
     // Call API 'send' operation on EC2 client with command object as input
     const resp = await ec2_client.send(command)
     console.log('[DEBUG]: EC2 response:', JSON.stringify(resp))
