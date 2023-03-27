@@ -31,10 +31,9 @@ export async function main(event: SQSEvent) {
     }
     // Initiate S3 'PutObject' command with input parameters
     const command = new PutObjectCommand(input)
-
     // Write SQS message into S3 bucket
     try {
-      console.log('Writing file: ' + `'${input.Key}'` + ' to S3 bucket: ' + `'${input.Bucket}'`)
+      console.log('Writing file: ' + `'${command.input.Key}'` + ' to S3 bucket: ' + `'${command.input.Bucket}'`)
       // Call API 'send' operation on S3 client with command object as input
       const resp = await s3_client.send(command)
       console.log('[DEBUG]: S3 response:', JSON.stringify(resp))
@@ -43,7 +42,7 @@ export async function main(event: SQSEvent) {
         console.error('S3 error', error.message)
       } else {
         console.error('Error', error)
-      } 
+      }
     }
   }
 
@@ -66,7 +65,7 @@ export async function main(event: SQSEvent) {
       console.error('EC2 error', error.message)
     } else {
       console.error('Error', error)
-    } 
+    }
   }
 
   // Return successful response to API GW
