@@ -34,7 +34,7 @@ export async function main(event: SQSEvent) {
 
     // Write SQS message into S3 bucket
     try {
-      console.log('Writing file: ' + `'${message.id}'` + ' to S3 bucket: ' + `'${bucket}'`)
+      console.log('Writing file: ' + `'${input.Key}'` + ' to S3 bucket: ' + `'${input.Bucket}'`)
       // Call API 'send' operation on S3 client with command object as input
       const resp = await s3_client.send(command)
       console.log('[DEBUG]: S3 response:', JSON.stringify(resp))
