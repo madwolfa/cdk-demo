@@ -20,11 +20,12 @@ export class CdkProjectStack extends cdk.Stack {
 
     // Define config interface
     interface Config {
-      allowlist?: string[]
+      allowlist: string[]
+      instances: number
     }
 
     // Try reading config from the properties file
-    let config: Config = {}
+    let config: Config = {allowlist: [], instances: 0}
     try {
       config = JSON.parse(fs.readFileSync('properties.json', 'utf8'))
     } catch (err) {
@@ -134,13 +135,17 @@ export class CdkProjectStack extends cdk.Stack {
     })
     */    
 
-    // Create EC2 instance
-    const myInstance = new ec2.Instance(this, 'MyInstance', {
-      vpc: myVpc,
-      instanceType: new ec2.InstanceType('m7g.large'),
-      machineImage: ec2.MachineImage.fromSsmParameter('/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-default-arm64'),
-      // role: ec2SsmRole,
-    })
+    // Create EC2 instance(s)
+    const instances: string[] = []
+    for (let i = 0; i < config.instances; i++) {
+      const instance = new ec2.Instance(this, `MyInstance${i+1}`, {
+        vpc: myVpc,
+        instanceType: new ec2.InstanceType('m7g.medium'),
+        machineImage: ec2.MachineImage.fromSsmParameter('/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-default-arm64'),
+        // role: ec2SsmRole,
+      })
+      instances.push(instance.instanceId)
+    }
 
     // Create CMK
     const myKms = new kms.Key(this, 'MyKmsKey', {})
@@ -171,10 +176,10 @@ export class CdkProjectStack extends cdk.Stack {
       vpc: myVpc,
       architecture: lambda.Architecture.ARM_64,
       entry: path.join(__dirname, '../src/handlers/index.ts'),
-      // Pass bucket name and instance id as environment variables
+      // Pass bucket name and instance ids as environment variables
       environment: {
         BUCKET_NAME: myBucket.bucketName,
-        INSTANCE_ID: myInstance.instanceId,
+        INSTANCE_IDS: instances.length !== 0 ? instances.join(',') : '',
       }
     })
     // Add SQS queue as Lambda event source

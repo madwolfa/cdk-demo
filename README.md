@@ -13,7 +13,7 @@ It will deploy the following resources (encrypted with CMK where applicable):
 * KMS key (CMK)
 * SQS queue (with Lambda trigger)
 * S3 bucket
-* EC2 instance
+* EC2 instance(s)
 * IAM roles and policies
 
 ## Prerequisites
@@ -35,10 +35,18 @@ It will deploy the following resources (encrypted with CMK where applicable):
     }
     ```
 
-3. Execute `npm install` to install Node dependencies
-4. Execute `npm run bootstrap` to bootstrap the target account
-5. Execute `npm run deploy` to deploy CDK stack (~5 minutes)
-6. Use the REST API endpoint URL to POST the following request:
+3. Set number of EC2 instances to create via `instances` property inside `properties.json` file:
+
+    ```json
+    {
+        "instances": 2
+    }
+    ```
+
+4. Execute `npm install` to install Node dependencies
+5. Execute `npm run bootstrap` to bootstrap the target account
+6. Execute `npm run deploy` to deploy CDK stack (~5 minutes)
+7. Use the REST API endpoint URL to POST the following request:
 
     ```bash
     curl --location 'https://<API_ID>.execute-api.us-east-1.amazonaws.com/prod' \
@@ -46,11 +54,11 @@ It will deploy the following resources (encrypted with CMK where applicable):
     --data '{"Subject": "Heck yeah", "Message": "STARTING EC2"}'
     ```
 
-7. Observe API Gateway execution and access logs
-8. Observe Lambda function execution log
-9. Observe individual SQS messages saved into S3 bucket as `<message_id>.json` files
-10. Observe shutdown EC2 instance start-up
-11. Execute `npm run destroy` to destroy CDK stack
+8. Observe API Gateway execution and access logs
+9. Observe Lambda function execution log
+10. Observe individual SQS messages saved into S3 bucket as `<message_id>.json` files
+11. Observe shutdown EC2 instance(s) start-up
+12. Execute `npm run destroy` to destroy CDK stack
 
 ## Useful commands
 

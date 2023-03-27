@@ -6,7 +6,7 @@ import { SQSEvent } from 'aws-lambda'
 // Extract environment variables
 const region = process.env.AWS_REGION
 const bucket = process.env.BUCKET_NAME
-const instance = process.env.INSTANCE_ID ?? ''
+const instances = process.env.INSTANCE_IDS ?? ''
 
 // Initiate clients outside Lambda handler for runtime caching
 const s3_client = new S3Client({region})
@@ -48,7 +48,7 @@ export async function main(event: SQSEvent) {
 
   // Define EC2 'StartInstances' command input parameters
   const input: StartInstancesCommandInput = {
-    InstanceIds: [instance],
+    InstanceIds: instances.split(','),
     DryRun: false,
   }
   // Initiate EC2 'StartInstances' command with input parameters
